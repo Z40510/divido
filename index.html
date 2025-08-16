@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>图片分割工具 | 1:1比例裁剪</title>
+    <title>图片分割工具 | 1:1比例裁剪与分割</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -28,7 +28,6 @@
             font-family: 'Helvetica', 'Arial', 'Noto Sans SC', sans-serif;
             line-height: 1.6;
             min-height: 100vh;
-            padding: 40px 20px;
             position: relative;
             overflow-x: hidden;
         }
@@ -39,7 +38,7 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 60vh;
+            height: 80vh;
             background: linear-gradient(135deg, rgba(108, 122, 137, 0.1) 0%, rgba(216, 195, 165, 0.08) 100%);
             z-index: -1;
         }
@@ -47,51 +46,280 @@
         .container {
             max-width: 1200px;
             margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* 导航栏 */
+        nav {
+            padding: 20px 0;
+            position: sticky;
+            top: 0;
+            background-color: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            z-index: 100;
+            transition: var(--transition);
+        }
+        
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+            color: var(--deep-green);
+            font-weight: 500;
+            text-decoration: none;
+            transition: transform 0.3s ease;
+        }
+        
+        .logo:hover {
+            transform: scale(1.05);
+        }
+        
+        .logo i {
+            font-size: 1.8rem;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+        
+        .nav-links a {
+            color: var(--gray-blue);
+            text-decoration: none;
+            transition: var(--transition);
+            font-weight: 300;
+            position: relative;
+            padding: 5px 0;
+        }
+        
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--deep-green);
+            transition: var(--transition);
+        }
+        
+        .nav-links a:hover {
+            color: var(--deep-green);
+        }
+        
+        .nav-links a:hover::after,
+        .nav-links a.active::after {
+            width: 100%;
+        }
+        
+        .nav-links a.active {
+            color: var(--deep-green);
+            font-weight: 500;
+        }
+        
+        /* 移动端菜单按钮 */
+        .menu-toggle {
+            display: none;
+            font-size: 1.8rem;
+            color: var(--deep-green);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .menu-toggle:hover {
+            transform: rotate(90deg);
         }
         
         /* 头部样式 */
         header {
             text-align: center;
-            margin-bottom: 60px;
-            padding: 0 20px;
-            animation: fadeIn 0.8s ease-out;
+            padding: 80px 0 100px;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeIn 0.8s ease-out forwards;
         }
         
-        .logo {
-            font-size: 2.8rem;
-            color: var(--deep-green);
-            margin-bottom: 15px;
-        }
-        
-        h1 {
+        .hero-title {
             font-family: 'Noto Sans SC', sans-serif;
             font-weight: 300;
-            font-size: 2.5rem;
+            font-size: 3.2rem;
             letter-spacing: 1px;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             color: var(--dark-charcoal);
+            line-height: 1.3;
+            position: relative;
+            display: inline-block;
         }
         
-        .subtitle {
-            font-size: 1.1rem;
-            max-width: 600px;
-            margin: 0 auto 30px;
+        .hero-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 10%;
+            width: 80%;
+            height: 3px;
+            background-color: var(--light-tan);
+            transform: scaleX(0);
+            animation: grow 1s ease-out 0.5s forwards;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.3rem;
+            max-width: 700px;
+            margin: 0 auto 40px;
             color: var(--gray-blue);
             font-weight: 300;
+            opacity: 0;
+            animation: fadeIn 0.8s ease-out 0.3s forwards;
         }
         
-        /* 主内容区 */
+        .cta-button {
+            display: inline-block;
+            padding: 16px 32px;
+            background: var(--deep-green);
+            color: white;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            text-decoration: none;
+            transition: var(--transition);
+            box-shadow: 0 5px 15px rgba(46, 79, 79, 0.2);
+            opacity: 0;
+            animation: fadeIn 0.8s ease-out 0.6s forwards;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(46, 79, 79, 0.3);
+        }
+        
+        .cta-button:hover::before {
+            left: 100%;
+        }
+        
+        /* 特性区域 */
+        .features-section {
+            padding: 80px 0;
+            background-color: white;
+        }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: 60px;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: var(--transition);
+        }
+        
+        .section-header.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .section-header h2 {
+            font-size: 2.2rem;
+            font-weight: 300;
+            color: var(--deep-green);
+            margin-bottom: 15px;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .section-header h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 2px;
+            background-color: var(--light-tan);
+        }
+        
+        .section-header p {
+            color: var(--gray-blue);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+        }
+        
+        .feature-card {
+            background-color: var(--cream);
+            border-radius: 12px;
+            padding: 35px;
+            transition: var(--transition);
+            text-align: center;
+            opacity: 0;
+            transform: translateY(30px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.03);
+        }
+        
+        .feature-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .feature-icon {
+            font-size: 3rem;
+            color: var(--deep-green);
+            margin-bottom: 25px;
+            transition: var(--transition);
+        }
+        
+        .feature-card:hover .feature-icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+        
+        .feature-card h3 {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            color: var(--dark-charcoal);
+            font-weight: 400;
+        }
+        
+        .feature-card p {
+            color: var(--gray-blue);
+        }
+        
+        /* 主内容区 - 工具部分 */
+        .tool-section {
+            padding: 100px 0;
+        }
+        
         .main-content {
             display: grid;
             grid-template-columns: 1fr 1.2fr;
             gap: 40px;
             margin-bottom: 60px;
-        }
-        
-        @media (max-width: 900px) {
-            .main-content {
-                grid-template-columns: 1fr;
-            }
         }
         
         /* 上传区域 */
@@ -103,11 +331,13 @@
             transition: var(--transition);
             position: relative;
             overflow: hidden;
+            opacity: 0;
+            transform: translateX(-30px);
         }
         
-        .upload-section:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+        .upload-section.visible {
+            opacity: 1;
+            transform: translateX(0);
         }
         
         .upload-section::before {
@@ -196,6 +426,11 @@
             border-left: 3px solid var(--light-tan);
             padding: 20px;
             border-radius: 0 8px 8px 0;
+            transition: var(--transition);
+        }
+        
+        .instructions:hover {
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
         }
         
         .instructions h3 {
@@ -226,6 +461,13 @@
             padding: 40px;
             box-shadow: 0 5px 25px rgba(0, 0, 0, 0.05);
             transition: var(--transition);
+            opacity: 0;
+            transform: translateX(30px);
+        }
+        
+        .preview-section.visible {
+            opacity: 1;
+            transform: translateX(0);
         }
         
         .preview-section:hover {
@@ -251,7 +493,7 @@
         
         .preview-box:hover {
             transform: translateY(-5px);
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
         }
         
         .preview-box h3 {
@@ -268,6 +510,11 @@
             height: 200px;
             display: block;
             background-color: var(--light-gray);
+            transition: var(--transition);
+        }
+        
+        canvas:hover {
+            filter: brightness(1.05);
         }
         
         /* 按钮样式 */
@@ -291,10 +538,15 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            position: relative;
+            overflow: hidden;
+            min-width: 140px;
+            justify-content: center;
         }
         
         .btn i {
             font-size: 1.1rem;
+            transition: transform 0.3s ease;
         }
         
         .btn:hover {
@@ -302,6 +554,25 @@
             color: white;
             transform: translateY(-3px);
             box-shadow: 0 5px 15px rgba(46, 79, 79, 0.2);
+        }
+        
+        .btn:hover i {
+            transform: rotate(10deg);
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
+        }
+        
+        .btn:hover::before {
+            left: 100%;
         }
         
         .btn:disabled {
@@ -314,6 +585,10 @@
         .btn:disabled:hover {
             background: white;
             color: var(--deep-green);
+        }
+        
+        .btn:disabled:hover i {
+            transform: none;
         }
         
         .btn-primary {
@@ -329,6 +604,13 @@
             box-shadow: 0 5px 25px rgba(0, 0, 0, 0.05);
             margin-bottom: 60px;
             transition: var(--transition);
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        
+        .result-section.visible {
+            opacity: 1;
+            transform: translateY(0);
         }
         
         .result-section:hover {
@@ -343,18 +625,6 @@
             margin-top: 20px;
         }
         
-        @media (max-width: 900px) {
-            .grid-container {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-        
-        @media (max-width: 500px) {
-            .grid-container {
-                grid-template-columns: 1fr;
-            }
-        }
-        
         .result-box {
             background-color: white;
             border-radius: 8px;
@@ -362,11 +632,18 @@
             box-shadow: 0 3px 15px rgba(0, 0, 0, 0.05);
             transition: var(--transition);
             border: 1px solid var(--light-gray);
+            opacity: 0;
+            transform: scale(0.9);
+        }
+        
+        .result-box.visible {
+            opacity: 1;
+            transform: scale(1);
         }
         
         .result-box:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
         }
         
         .result-box h3 {
@@ -386,7 +663,7 @@
         .download-btn {
             display: block;
             width: 100%;
-            padding: 12px;
+            padding: 14px 12px;
             background: rgba(216, 195, 165, 0.1);
             color: var(--deep-green);
             border: none;
@@ -398,6 +675,19 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .download-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(46, 79, 79, 0.1), transparent);
+            transition: 0.5s;
         }
         
         .download-btn:hover {
@@ -405,20 +695,255 @@
             color: white;
         }
         
+        .download-btn:hover::before {
+            left: 100%;
+        }
+        
         .download-all {
             margin-top: 40px;
             text-align: center;
         }
         
+        /* 使用场景 */
+        .use-cases {
+            padding: 100px 0;
+            background-color: white;
+        }
+        
+        .cases-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 60px;
+            margin-top: 40px;
+        }
+        
+        .case-item {
+            display: flex;
+            gap: 25px;
+            align-items: center;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: var(--transition);
+            padding: 20px;
+            border-radius: 12px;
+        }
+        
+        .case-item.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .case-item:hover {
+            background-color: rgba(216, 195, 165, 0.05);
+            transform: translateY(-5px);
+        }
+        
+        .case-icon {
+            width: 80px;
+            height: 80px;
+            background-color: rgba(46, 79, 79, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: var(--transition);
+        }
+        
+        .case-item:hover .case-icon {
+            transform: rotate(10deg) scale(1.1);
+            background-color: rgba(46, 79, 79, 0.15);
+        }
+        
+        .case-icon i {
+            font-size: 2rem;
+            color: var(--deep-green);
+        }
+        
+        .case-content h3 {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            font-weight: 400;
+            color: var(--deep-green);
+        }
+        
+        .case-content p {
+            color: var(--gray-blue);
+        }
+        
+        /* FAQ部分 */
+        .faq-section {
+            padding: 100px 0;
+        }
+        
+        .faq-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .faq-item {
+            margin-bottom: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+            background-color: white;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: var(--transition);
+        }
+        
+        .faq-item.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .faq-question {
+            width: 100%;
+            text-align: left;
+            padding: 20px 25px;
+            background-color: white;
+            border: none;
+            font-size: 1.1rem;
+            color: var(--deep-green);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: var(--transition);
+        }
+        
+        .faq-question:hover {
+            background-color: rgba(216, 195, 165, 0.05);
+        }
+        
+        .faq-question i {
+            transition: var(--transition);
+        }
+        
+        .faq-answer {
+            background-color: white;
+            padding: 0 25px;
+            max-height: 0;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+        
+        .faq-answer p {
+            color: var(--gray-blue);
+            padding: 0 0 20px;
+        }
+        
+        .faq-item.active .faq-answer {
+            max-height: 200px;
+            padding: 0 25px 20px;
+        }
+        
+        .faq-item.active .faq-question i {
+            transform: rotate(180deg);
+        }
+        
+        /* 联系我们 */
+        .contact-section {
+            padding: 100px 0;
+            background-color: white;
+        }
+        
+        .contact-container {
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: center;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: var(--transition);
+        }
+        
+        .contact-container.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .contact-info {
+            margin: 40px 0;
+        }
+        
+        .contact-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            color: var(--gray-blue);
+            transition: var(--transition);
+            padding: 10px;
+            border-radius: 8px;
+        }
+        
+        .contact-item:hover {
+            background-color: rgba(216, 195, 165, 0.05);
+            transform: translateX(5px);
+        }
+        
+        .contact-item i {
+            color: var(--deep-green);
+            font-size: 1.2rem;
+        }
+        
         /* 页脚 */
         footer {
             text-align: center;
-            padding: 30px 20px 20px;
+            padding: 50px 20px 30px;
             color: var(--gray-blue);
             font-size: 0.95rem;
             border-top: 1px solid rgba(108, 122, 137, 0.2);
-            max-width: 800px;
+            max-width: 1200px;
             margin: 0 auto;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: var(--transition);
+        }
+        
+        footer.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .footer-links a {
+            color: var(--gray-blue);
+            text-decoration: none;
+            transition: var(--transition);
+            padding: 5px 0;
+            position: relative;
+        }
+        
+        .footer-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background-color: var(--deep-green);
+            transition: var(--transition);
+        }
+        
+        .footer-links a:hover {
+            color: var(--deep-green);
+        }
+        
+        .footer-links a:hover::after {
+            width: 100%;
+        }
+        
+        .copyright {
+            margin-top: 20px;
         }
         
         /* 动画 */
@@ -427,8 +952,9 @@
             to { opacity: 1; transform: translateY(0); }
         }
         
-        .fade-in {
-            animation: fadeIn 0.6s ease forwards;
+        @keyframes grow {
+            from { transform: scaleX(0); }
+            to { transform: scaleX(1); }
         }
         
         /* 工具提示 */
@@ -464,155 +990,589 @@
         }
         
         /* 响应式调整 */
+        @media (max-width: 900px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .grid-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .features-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .cases-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .upload-section, .preview-section {
+                transform: translateX(0);
+            }
+        }
+        
         @media (max-width: 768px) {
-            body {
-                padding: 20px 15px;
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1.1rem;
+            }
+            
+            .nav-links {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 70%;
+                height: 100vh;
+                background-color: white;
+                flex-direction: column;
+                padding: 80px 30px;
+                gap: 25px;
+                box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+                transition: right 0.3s ease;
+                z-index: 99;
+            }
+            
+            .nav-links.active {
+                right: 0;
+            }
+            
+            .nav-links a {
+                font-size: 1.2rem;
+                padding: 10px 0;
+            }
+            
+            .menu-toggle {
+                display: block;
+                position: relative;
+                z-index: 100;
+            }
+            
+            .section-header h2 {
+                font-size: 1.8rem;
             }
             
             header {
-                margin-bottom: 40px;
+                padding: 60px 0 80px;
             }
             
-            h1 {
+            .features-section, .tool-section, .use-cases, .faq-section, .contact-section {
+                padding: 60px 0;
+            }
+            
+            /* 移动端按钮优化 */
+            .btn {
+                padding: 16px 24px;
+                width: 100%;
+                font-size: 1.05rem;
+            }
+            
+            .btn-container {
+                flex-direction: column;
+                gap: 12px;
+            }
+            
+            .download-btn {
+                padding: 16px 12px;
+                font-size: 1rem;
+            }
+        }
+        
+        @media (max-width: 500px) {
+            .grid-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .hero-title {
                 font-size: 2rem;
             }
             
-            .upload-section, .preview-section, .result-section {
-                padding: 30px 20px;
+            .case-item {
+                flex-direction: column;
+                text-align: center;
             }
             
-            .main-content {
-                gap: 30px;
+            .preview-container {
+                grid-template-columns: 1fr;
+            }
+            
+            canvas {
+                height: 180px;
+            }
+            
+            .result-canvas {
+                height: 150px;
+            }
+            
+            .footer-links {
+                gap: 15px 25px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header class="fade-in">
-            <div class="logo">
+    <!-- 导航栏 -->
+    <nav>
+        <div class="container nav-container">
+            <a href="#" class="logo">
                 <i class="fas fa-crop-alt"></i>
+                <span>图片分割工具</span>
+            </a>
+            <div class="menu-toggle">
+                <i class="fas fa-bars"></i>
             </div>
-            <h1>图片分割工具</h1>
-            <p class="subtitle">上传任意比例的图片，自动裁剪为1:1比例并分割为4张正方形图片</p>
-        </header>
-        
-        <div class="main-content">
-            <div class="upload-section fade-in">
-                <div class="section-title">
-                    <i class="fas fa-cloud-upload-alt"></i>
-                    <h2>上传图片</h2>
-                </div>
-                
-                <div class="upload-area" id="uploadArea">
-                    <div class="upload-icon">
-                        <i class="fas fa-file-image"></i>
-                    </div>
-                    <p class="upload-text">点击或拖拽图片到此处上传</p>
-                    <p class="file-types">支持 JPG, PNG, GIF, WebP 格式</p>
-                    <input type="file" id="fileInput" accept="image/*">
-                </div>
-                
-                <div class="instructions">
-                    <h3><i class="fas fa-info-circle"></i> 使用说明</h3>
-                    <ol>
-                        <li>上传任意比例的图片文件</li>
-                        <li>系统会自动将图片裁剪为1:1比例（取中间部分）</li>
-                        <li>裁剪后的图片将被平均分割为4张正方形小图片</li>
-                        <li>预览分割结果并下载单张图片或全部图片</li>
-                    </ol>
-                </div>
-                
-                <p class="tooltip" style="margin-top: 20px; display: inline-block;">
-                    隐私说明 <i class="fas fa-question-circle" style="font-size: 0.9rem;"></i>
-                    <span class="tooltiptext">所有图片处理都在浏览器中完成，不会上传到任何服务器</span>
-                </p>
+            <div class="nav-links">
+                <a href="#features" class="active">功能</a>
+                <a href="#tool">工具</a>
+                <a href="#use-cases">使用场景</a>
+                <a href="#faq">常见问题</a>
+                <a href="#contact">联系我们</a>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- 英雄区域 -->
+    <header>
+        <div class="container">
+            <h1 class="hero-title">图片分割</h1>
+            <p class="hero-subtitle">裁剪与分割工具，将图片分为4张正方形图片</p>
+            <a href="#tool" class="cta-button">
+                <i class="fas fa-magic"></i> 立即使用
+            </a>
+        </div>
+    </header>
+    
+    <!-- 特性区域 -->
+    <section class="features-section" id="features">
+        <div class="container">
+            <div class="section-header">
+                <h2>为什么选择我们的图片分割工具</h2>
+                <p>我们的工具专为简化图片处理流程而设计，提供高效、安全且易用的图片分割体验</p>
             </div>
             
-            <div class="preview-section fade-in" style="animation-delay: 0.2s;">
-                <div class="section-title">
-                    <i class="fas fa-crop-alt"></i>
-                    <h2>图片预览</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h3>快速高效</h3>
+                    <p>无需等待上传，所有处理均在浏览器中完成</p>
                 </div>
                 
-                <div class="preview-container">
-                    <div class="preview-box">
-                        <h3>原始图片</h3>
-                        <canvas id="originalCanvas"></canvas>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>隐私保护</h3>
+                    <p>图片不会上传到任何服务器，所有处理均在本地完成，保护您的隐私安全</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h3>适应设计</h3>
+                    <p>适配电脑、平板与手机设备</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-sliders-h"></i>
+                    </div>
+                    <h3>质量输出</h3>
+                    <p>保持原照片，提供高清的分割结果</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-cloud-download-alt"></i>
+                    </div>
+                    <h3>便捷下载</h3>
+                    <p>支持单张下载或批量下载所有分割结果</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-free-code-camp"></i>
+                    </div>
+                    <h3>免费</h3>
+                    <p>所有功能完全免费使用，无收费，无使用次数限制</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- 工具区域 -->
+    <section class="tool-section" id="tool">
+        <div class="container">
+            <div class="section-header">
+                <h2>图片分割工具</h2>
+                <p>上传任意比例的图片，自动裁剪为1:1比例并分割为4张正方形图片</p>
+            </div>
+            
+            <div class="main-content">
+                <div class="upload-section">
+                    <div class="section-title">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <h2>上传图片</h2>
                     </div>
                     
-                    <div class="preview-box">
-                        <h3>1:1 裁剪后</h3>
-                        <canvas id="croppedCanvas"></canvas>
+                    <div class="upload-area" id="uploadArea">
+                        <div class="upload-icon">
+                            <i class="fas fa-file-image"></i>
+                        </div>
+                        <p class="upload-text">点击或拖拽图片到此处上传</p>
+                        <p class="file-types">支持 JPG, PNG, GIF, WebP 格式</p>
+                        <input type="file" id="fileInput" accept="image/*">
+                    </div>
+                    
+                    <div class="instructions">
+                        <h3><i class="fas fa-info-circle"></i> 使用说明</h3>
+                        <ol>
+                            <li>上传任意比例的图片文件</li>
+                            <li>系统会自动将图片裁剪为1:1比例（取中间部分）</li>
+                            <li>裁剪后的图片将被平均分割为4张正方形小图片</li>
+                            <li>预览分割结果并下载单张图片或全部图片</li>
+                        </ol>
+                    </div>
+                    
+                    <p class="tooltip" style="margin-top: 20px; display: inline-block;">
+                        隐私说明 <i class="fas fa-question-circle" style="font-size: 0.9rem;"></i>
+                        <span class="tooltiptext">所有图片处理都在本地完成</span>
+                    </p>
+                </div>
+                
+                <div class="preview-section">
+                    <div class="section-title">
+                        <i class="fas fa-crop-alt"></i>
+                        <h2>图片预览</h2>
+                    </div>
+                    
+                    <div class="preview-container">
+                        <div class="preview-box">
+                            <h3>原始图片</h3>
+                            <canvas id="originalCanvas"></canvas>
+                        </div>
+                        
+                        <div class="preview-box">
+                            <h3>1:1 裁剪后</h3>
+                            <canvas id="croppedCanvas"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="btn-container">
+                        <button class="btn btn-primary" id="processBtn" disabled>
+                            <i class="fas fa-cut"></i> 分割图片
+                        </button>
+                        <button class="btn" id="resetBtn" disabled>
+                            <i class="fas fa-redo"></i> 重新上传
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="result-section" id="resultSection" style="display: none;">
+                <div class="section-title">
+                    <i class="fas fa-th"></i>
+                    <h2>分割结果</h2>
+                </div>
+                <p style="text-align: center; margin-bottom: 20px; color: var(--gray-blue);">点击下方按钮下载分割后的图片</p>
+                
+                <div class="grid-container">
+                    <div class="result-box">
+                        <h3>左上部分</h3>
+                        <canvas id="part1Canvas" class="result-canvas"></canvas>
+                        <button class="download-btn" data-id="1">
+                            <i class="fas fa-download"></i> 下载图片 1
+                        </button>
+                    </div>
+                    
+                    <div class="result-box">
+                        <h3>右上部分</h3>
+                        <canvas id="part2Canvas" class="result-canvas"></canvas>
+                        <button class="download-btn" data-id="2">
+                            <i class="fas fa-download"></i> 下载图片 2
+                        </button>
+                    </div>
+                    
+                    <div class="result-box">
+                        <h3>左下部分</h3>
+                        <canvas id="part3Canvas" class="result-canvas"></canvas>
+                        <button class="download-btn" data-id="3">
+                            <i class="fas fa-download"></i> 下载图片 3
+                        </button>
+                    </div>
+                    
+                    <div class="result-box">
+                        <h3>右下部分</h3>
+                        <canvas id="part4Canvas" class="result-canvas"></canvas>
+                        <button class="download-btn" data-id="4">
+                            <i class="fas fa-download"></i> 下载图片 4
+                        </button>
                     </div>
                 </div>
                 
-                <div class="btn-container">
-                    <button class="btn btn-primary" id="processBtn" disabled>
-                        <i class="fas fa-cut"></i> 分割图片
-                    </button>
-                    <button class="btn" id="resetBtn" disabled>
-                        <i class="fas fa-redo"></i> 重新上传
+                <div class="download-all">
+                    <button class="btn btn-primary" id="downloadAllBtn">
+                        <i class="fas fa-download"></i> 下载全部图片
                     </button>
                 </div>
             </div>
         </div>
-        
-        <div class="result-section fade-in" id="resultSection" style="display: none; animation-delay: 0.4s;">
-            <div class="section-title">
-                <i class="fas fa-th"></i>
-                <h2>分割结果</h2>
-            </div>
-            <p style="text-align: center; margin-bottom: 20px; color: var(--gray-blue);">点击下方按钮下载分割后的图片</p>
-            
-            <div class="grid-container">
-                <div class="result-box">
-                    <h3>左上部分</h3>
-                    <canvas id="part1Canvas" class="result-canvas"></canvas>
-                    <button class="download-btn" data-id="1">
-                        <i class="fas fa-download"></i> 下载图片 1
-                    </button>
-                </div>
-                
-                <div class="result-box">
-                    <h3>右上部分</h3>
-                    <canvas id="part2Canvas" class="result-canvas"></canvas>
-                    <button class="download-btn" data-id="2">
-                        <i class="fas fa-download"></i> 下载图片 2
-                    </button>
-                </div>
-                
-                <div class="result-box">
-                    <h3>左下部分</h3>
-                    <canvas id="part3Canvas" class="result-canvas"></canvas>
-                    <button class="download-btn" data-id="3">
-                        <i class="fas fa-download"></i> 下载图片 3
-                    </button>
-                </div>
-                
-                <div class="result-box">
-                    <h3>右下部分</h3>
-                    <canvas id="part4Canvas" class="result-canvas"></canvas>
-                    <button class="download-btn" data-id="4">
-                        <i class="fas fa-download"></i> 下载图片 4
-                    </button>
-                </div>
+    </section>
+    
+    <!-- 使用场景 -->
+    <section class="use-cases" id="use-cases">
+        <div class="container">
+            <div class="section-header">
+                <h2>适用场景</h2>
+                <p>我们的图片分割工具适用于多种场景，帮助您轻松处理图片需求</p>
             </div>
             
-            <div class="download-all">
-                <button class="btn btn-primary" id="downloadAllBtn">
-                    <i class="fas fa-download"></i> 下载全部图片
-                </button>
+            <div class="cases-grid">
+                <div class="case-item">
+                    <div class="case-icon">
+                        <i class="fas fa-camera"></i>
+                    </div>
+                    <div class="case-content">
+                        <h3>社交媒体分享</h3>
+                        <p>将一张大图分割为4张正方形图片，适合在Instagram等平台以拼图形式发布，吸引更多关注</p>
+                    </div>
+                </div>
+                
+                <div class="case-item">
+                    <div class="case-icon">
+                        <i class="fas fa-paint-brush"></i>
+                    </div>
+                    <div class="case-content">
+                        <h3>设计素材处理</h3>
+                        <p>快速将设计稿分割为多个部分，便于分别编辑和使用，提高设计效率</p>
+                    </div>
+                </div>
+                
+                <div class="case-item">
+                    <div class="case-icon">
+                        <i class="fas fa-mobile"></i>
+                    </div>
+                    <div class="case-content">
+                        <h3>移动端适配</h3>
+                        <p>将图片处理为适合移动端展示的正方形比例，提升用户浏览体验</p>
+                    </div>
+                </div>
+                
+                <div class="case-item">
+                    <div class="case-icon">
+                        <i class="fas fa-ad"></i>
+                    </div>
+                    <div class="case-content">
+                        <h3>广告素材制作</h3>
+                        <p>快速制作系列广告图片，保持风格统一的同时展示不同内容</p>
+                    </div>
+                </div>
             </div>
         </div>
-        
-        <footer class="fade-in" style="animation-delay: 0.6s;">
-            <p>© 蟑螂 图片分割工具 制作者邮箱：ZHANGLANG40510@foxmail.com | 使用HTML5 Canvas技术实现 | 完全在浏览器中运行</p>
-        </footer>
-    </div>
+    </section>
+    
+    <!-- FAQ部分 -->
+    <section class="faq-section" id="faq">
+        <div class="container">
+            <div class="section-header">
+                <h2>常见问题</h2>
+                <p>以下是用户经常咨询的问题，如果您有其他疑问，请联系我们</p>
+            </div>
+            
+            <div class="faq-container">
+                <div class="faq-item">
+                    <button class="faq-question">
+                        图片处理需要联网吗？
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="faq-answer">
+                        <p>不需要。所有图片处理都在浏览器完成。</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <button class="faq-question">
+                        支持哪些图片格式？
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="faq-answer">
+                        <p>我们支持常见的图片格式，包括JPG、PNG、GIF和WebP等主流格式。</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <button class="faq-question">
+                        处理后的图片质量如何？
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="faq-answer">
+                        <p>我们使用高质量压缩算法，尽可能保持原始图片的质量。您可以获得清晰的分割结果。</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <button class="faq-question">
+                        有图片大小限制吗？
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="faq-answer">
+                        <p>理论上没有严格的大小限制，但过大的图片可能会导致浏览器处理缓慢。建议处理不超过10MB的图片以获得最佳体验。</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <button class="faq-question">
+                        可以分割为其他数量的图片吗？
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="faq-answer">
+                        <p>目前我们的工具固定将图片分割为4张。如果您有分割为其他数量的需求，请联系我们提出建议。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- 联系我们 -->
+    <section class="contact-section" id="contact">
+        <div class="container">
+            <div class="section-header">
+                <h2>联系我们</h2>
+                <p>如有任何问题、建议或反馈，请随时与我们联系</p>
+            </div>
+            
+            <div class="contact-container">
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <span>ZHANGLANG40510@foxmail.com</span>
+                    </div>
+                </div>
+                
+                <a href="#tool" class="cta-button">
+                    <i class="fas fa-arrow-circle-up"></i> 返回工具
+                </a>
+            </div>
+        </div>
+    </section>
+    
+    <!-- 页脚 -->
+    <footer>
+        <div class="container">
+            <div class="footer-links">
+                <a href="#features">功能</a>
+                <a href="#tool">工具</a>
+                <a href="#use-cases">使用场景</a>
+                <a href="#faq">常见问题</a>
+                <a href="#contact">联系我们</a>
+            </div>
+            
+            <p>© 图片分割工具 制作者邮箱：ZHANGLANG40510@foxmail.com</p>
+            <p class="copyright">使用HTML5 Canvas技术实现 | 完全在浏览器中运行</p>
+        </div>
+    </footer>
     
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // 滚动动画观察器
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.1
+            };
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+            
+            // 需要添加滚动动画的元素
+            const animatedElements = [
+                ...document.querySelectorAll('.section-header'),
+                ...document.querySelectorAll('.feature-card'),
+                ...document.querySelectorAll('.case-item'),
+                ...document.querySelectorAll('.faq-item'),
+                document.querySelector('.upload-section'),
+                document.querySelector('.preview-section'),
+                document.querySelector('.result-section'),
+                document.querySelector('.contact-container'),
+                document.querySelector('footer')
+            ];
+            
+            animatedElements.forEach(el => {
+                observer.observe(el);
+            });
+            
+            // 结果框的延迟动画
+            const resultBoxes = document.querySelectorAll('.result-box');
+            resultBoxes.forEach((box, index) => {
+                if (box.parentElement.style.display !== 'none') {
+                    setTimeout(() => {
+                        box.classList.add('visible');
+                    }, index * 150);
+                }
+            });
+            
+            // 移动端菜单
+            const menuToggle = document.querySelector('.menu-toggle');
+            const navLinks = document.querySelector('.nav-links');
+            
+            menuToggle.addEventListener('click', () => {
+                navLinks.classList.toggle('active');
+                menuToggle.innerHTML = navLinks.classList.contains('active') 
+                    ? '<i class="fas fa-times"></i>' 
+                    : '<i class="fas fa-bars"></i>';
+            });
+            
+            // 点击导航链接后关闭菜单
+            document.querySelectorAll('.nav-links a').forEach(link => {
+                link.addEventListener('click', () => {
+                    navLinks.classList.remove('active');
+                    menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
+                });
+            });
+            
+            // FAQ手风琴效果
+            const faqQuestions = document.querySelectorAll('.faq-question');
+            faqQuestions.forEach(question => {
+                question.addEventListener('click', () => {
+                    const parent = question.parentElement;
+                    
+                    // 关闭其他打开的FAQ项
+                    document.querySelectorAll('.faq-item').forEach(item => {
+                        if (item !== parent && item.classList.contains('active')) {
+                            item.classList.remove('active');
+                        }
+                    });
+                    
+                    parent.classList.toggle('active');
+                });
+            });
+            
+            // 平滑滚动
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+            
             // 获取DOM元素
             const uploadArea = document.getElementById('uploadArea');
             const fileInput = document.getElementById('fileInput');
@@ -685,6 +1645,10 @@
                         processBtn.disabled = false;
                         resetBtn.disabled = false;
                         
+                        // 添加按钮动画
+                        processBtn.classList.add('pulse');
+                        setTimeout(() => processBtn.classList.remove('pulse'), 1000);
+                        
                         // 绘制原始图片
                         drawOriginalImage();
                     };
@@ -703,50 +1667,93 @@
                 originalCanvas.width = originalImage.width * ratio;
                 originalCanvas.height = originalImage.height * ratio;
                 
-                // 绘制原始图片
+                // 清空并绘制原始图片（添加淡入效果）
                 ctx.clearRect(0, 0, originalCanvas.width, originalCanvas.height);
-                ctx.drawImage(originalImage, 0, 0, originalCanvas.width, originalCanvas.height);
+                originalCanvas.style.opacity = '0';
+                setTimeout(() => {
+                    ctx.drawImage(originalImage, 0, 0, originalCanvas.width, originalCanvas.height);
+                    originalCanvas.style.transition = 'opacity 0.5s ease';
+                    originalCanvas.style.opacity = '1';
+                }, 100);
                 
                 // 清空裁剪预览
                 const croppedCtx = croppedCanvas.getContext('2d');
                 croppedCtx.clearRect(0, 0, croppedCanvas.width, croppedCanvas.height);
+                croppedCanvas.style.opacity = '0';
             }
             
             // 处理按钮事件
             processBtn.addEventListener('click', function() {
                 if (!originalImage) return;
                 
-                // 裁剪为1:1比例
-                cropImage();
+                // 添加加载状态
+                this.disabled = true;
+                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 处理中...';
                 
-                // 分割图片
-                splitImage();
-                
-                // 显示结果区域
-                resultSection.style.display = 'block';
-                
-                // 滚动到结果区域
-                resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                // 裁剪为1:1比例（添加延迟动画效果）
+                setTimeout(() => {
+                    cropImage();
+                    
+                    // 分割图片
+                    setTimeout(() => {
+                        splitImage();
+                        
+                        // 显示结果区域
+                        resultSection.style.display = 'block';
+                        observer.observe(resultSection);
+                        
+                        // 结果框动画
+                        setTimeout(() => {
+                            const resultBoxes = document.querySelectorAll('.result-box');
+                            resultBoxes.forEach((box, index) => {
+                                setTimeout(() => {
+                                    box.classList.add('visible');
+                                }, index * 150);
+                            });
+                        }, 300);
+                        
+                        // 恢复按钮状态
+                        this.innerHTML = '<i class="fas fa-cut"></i> 分割图片';
+                        this.disabled = false;
+                        
+                        // 滚动到结果区域
+                        resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }, 800);
+                }, 500);
             });
             
             // 重置按钮
             resetBtn.addEventListener('click', function() {
-                fileInput.value = '';
-                originalImage = null;
-                
-                // 清空所有Canvas
+                // 添加动画效果
                 const canvases = [originalCanvas, croppedCanvas, part1Canvas, part2Canvas, part3Canvas, part4Canvas];
                 canvases.forEach(canvas => {
-                    const ctx = canvas.getContext('2d');
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    canvas.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                    canvas.style.opacity = '0';
+                    canvas.style.transform = 'scale(0.9)';
                 });
                 
-                // 隐藏结果区域
-                resultSection.style.display = 'none';
-                
-                // 禁用按钮
-                processBtn.disabled = true;
-                resetBtn.disabled = true;
+                setTimeout(() => {
+                    fileInput.value = '';
+                    originalImage = null;
+                    
+                    // 清空所有Canvas
+                    canvases.forEach(canvas => {
+                        const ctx = canvas.getContext('2d');
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+                        canvas.style.opacity = '1';
+                        canvas.style.transform = 'scale(1)';
+                    });
+                    
+                    // 隐藏结果区域
+                    resultSection.style.display = 'none';
+                    document.querySelectorAll('.result-box').forEach(box => {
+                        box.classList.remove('visible');
+                    });
+                    
+                    // 禁用按钮
+                    processBtn.disabled = true;
+                    resetBtn.disabled = true;
+                }, 300);
             });
             
             function cropImage() {
@@ -761,13 +1768,21 @@
                 croppedCanvas.width = size;
                 croppedCanvas.height = size;
                 
-                // 绘制裁剪后的图片
+                // 清空并绘制裁剪后的图片（添加动画）
                 ctx.clearRect(0, 0, size, size);
-                ctx.drawImage(
-                    originalImage, 
-                    startX, startY, size, size,
-                    0, 0, size, size
-                );
+                croppedCanvas.style.opacity = '0';
+                croppedCanvas.style.transform = 'scale(0.9)';
+                
+                setTimeout(() => {
+                    ctx.drawImage(
+                        originalImage, 
+                        startX, startY, size, size,
+                        0, 0, size, size
+                    );
+                    croppedCanvas.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    croppedCanvas.style.opacity = '1';
+                    croppedCanvas.style.transform = 'scale(1)';
+                }, 100);
                 
                 // 存储裁剪后的图片数据
                 croppedImageData = croppedCanvas.toDataURL('image/jpeg', 0.92);
@@ -788,6 +1803,8 @@
                 partCanvases.forEach(canvas => {
                     canvas.width = 300;
                     canvas.height = 300;
+                    canvas.style.opacity = '0';
+                    canvas.style.transform = 'scale(0.9)';
                 });
                 
                 // 分割图片
@@ -801,11 +1818,18 @@
                     
                     // 绘制分割部分
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
-                    ctx.drawImage(
-                        croppedCanvas,
-                        sx, sy, halfSize, halfSize,
-                        0, 0, canvas.width, canvas.height
-                    );
+                    
+                    // 添加延迟动画
+                    setTimeout(() => {
+                        ctx.drawImage(
+                            croppedCanvas,
+                            sx, sy, halfSize, halfSize,
+                            0, 0, canvas.width, canvas.height
+                        );
+                        canvas.style.transition = 'opacity 0.5s ease ' + (i * 0.1) + 's, transform 0.5s ease ' + (i * 0.1) + 's';
+                        canvas.style.opacity = '1';
+                        canvas.style.transform = 'scale(1)';
+                    }, 100 + i * 100);
                     
                     // 存储图片数据
                     splitImagesData.push(canvas.toDataURL('image/jpeg', 0.92));
@@ -817,7 +1841,17 @@
                 btn.addEventListener('click', function() {
                     const id = parseInt(this.getAttribute('data-id')) - 1;
                     if (splitImagesData[id]) {
-                        downloadImage(splitImagesData[id], `分割图片-${id+1}.jpg`);
+                        // 添加点击动画
+                        this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 下载中...';
+                        
+                        setTimeout(() => {
+                            downloadImage(splitImagesData[id], `分割图片-${id+1}.jpg`);
+                            this.innerHTML = `<i class="fas fa-check"></i> 已下载`;
+                            
+                            setTimeout(() => {
+                                this.innerHTML = `<i class="fas fa-download"></i> 下载图片 ${id+1}`;
+                            }, 1500);
+                        }, 500);
                     }
                 });
             });
@@ -825,9 +1859,22 @@
             // 下载全部图片
             downloadAllBtn.addEventListener('click', function() {
                 if (splitImagesData.length === 4) {
+                    this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 下载中...';
+                    
                     splitImagesData.forEach((data, index) => {
                         setTimeout(() => {
                             downloadImage(data, `分割图片-${index+1}.jpg`);
+                            
+                            // 最后一个文件下载完成后恢复按钮状态
+                            if (index === 3) {
+                                setTimeout(() => {
+                                    downloadAllBtn.innerHTML = '<i class="fas fa-check"></i> 全部下载完成';
+                                    
+                                    setTimeout(() => {
+                                        downloadAllBtn.innerHTML = '<i class="fas fa-download"></i> 下载全部图片';
+                                    }, 1500);
+                                }, 500);
+                            }
                         }, index * 300);
                     });
                 }
@@ -839,24 +1886,30 @@
                 link.href = dataUrl;
                 link.download = filename;
                 document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
+                
+                // 模拟点击下载
+                const event = new MouseEvent('click', {
+                    view: window,
+                    bubbles: true,
+                    cancelable: true
+                });
+                link.dispatchEvent(event);
+                
+                setTimeout(() => {
+                    document.body.removeChild(link);
+                }, 100);
             }
             
-            // 添加微交互效果
-            const buttons = document.querySelectorAll('.btn, .download-btn');
-            buttons.forEach(btn => {
-                btn.addEventListener('mousedown', () => {
-                    btn.style.transform = 'translateY(2px)';
-                });
-                
-                btn.addEventListener('mouseup', () => {
-                    btn.style.transform = '';
-                });
-                
-                btn.addEventListener('mouseleave', () => {
-                    btn.style.transform = '';
-                });
+            // 滚动时导航栏效果
+            window.addEventListener('scroll', () => {
+                const nav = document.querySelector('nav');
+                if (window.scrollY > 50) {
+                    nav.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.08)';
+                    nav.style.padding = '15px 0';
+                } else {
+                    nav.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.05)';
+                    nav.style.padding = '20px 0';
+                }
             });
         });
     </script>
